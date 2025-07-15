@@ -4,9 +4,10 @@ Esta es una aplicación en React para administrar puntos de recompensa de un equ
 
 - Agregar miembros especificando nombre y correo electrónico, editarlos o eliminarlos.
 - Cargar puntos de 100 en 100 o ingresar manualmente una cantidad de 1 a 9999 puntos.
-- Exportar en PDF un informe con los puntos acumulados.
+- Redimir puntos restándolos del saldo disponible.
+- Exportar un informe con los puntos acumulados en PDF o XLS.
 
-Para probarla localmente, abre `index.html` en un navegador moderno con conexión a internet (se utilizan CDNs para React, Babel y jsPDF).
+Para probarla localmente, abre `index.html` en un navegador moderno con conexión a internet (se utilizan CDNs para React, Babel, jsPDF y XLSX).
 
 ## Enlace público
 

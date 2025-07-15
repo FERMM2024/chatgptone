@@ -21,6 +21,8 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <!-- jsPDF para exportar el informe -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- XLSX para generar archivos de Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
   <script type="text/babel">
     const initialMembers = [
@@ -35,6 +37,7 @@
       const [email, setEmail] = React.useState('');
       const [editId, setEditId] = React.useState(null);
       const [customAmounts, setCustomAmounts] = React.useState({});
+      const [redeemAmounts, setRedeemAmounts] = React.useState({});
 
       const resetForm = () => {
         setName('');
@@ -75,8 +78,21 @@
         setCustomAmounts({ ...customAmounts, [id]: '' });
       };
 
+      const redeemPoints = (id) => {
+        const value = parseInt(redeemAmounts[id], 10);
+        const member = members.find(m => m.id === id);
+        if (value >= 1 && value <= member.points) {
+          setMembers(members.map(m => m.id === id ? { ...m, points: m.points - value } : m));
+        }
+        setRedeemAmounts({ ...redeemAmounts, [id]: '' });
+      };
+
       const updateCustom = (id, val) => {
         setCustomAmounts({ ...customAmounts, [id]: val });
+      };
+
+      const updateRedeem = (id, val) => {
+        setRedeemAmounts({ ...redeemAmounts, [id]: val });
       };
 
       const exportPdf = () => {
@@ -87,6 +103,14 @@
           doc.text(`${m.name} (${m.email}) - ${m.points}`, 10, 20 + idx * 10);
         });
         doc.save('informe_puntos.pdf');
+      };
+
+      const exportXls = () => {
+        const data = members.map(m => ({ Nombre: m.name, Correo: m.email, Puntos: m.points }));
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Informe');
+        XLSX.writeFile(workbook, 'informe_puntos.xlsx');
       };
 
       return (
@@ -125,29 +149,40 @@
                   <td>{m.name}</td>
                   <td>{m.email}</td>
                   <td>{m.points}</td>
-                  <td>
-                    <button onClick={() => addPoints100(m.id)}>
-                      +100
-                    </button>
-                    <input
-                      type='number'
-                      min='1'
-                      max='9999'
-                      value={customAmounts[m.id] || ''}
-                      onChange={e => updateCustom(m.id, e.target.value)}
-                    />
-                    <button onClick={() => addCustomPoints(m.id)}>
-                      Agregar
-                    </button>
-                    <button onClick={() => handleEdit(m)}>Editar</button>
-                    <button onClick={() => handleDelete(m.id)}>Eliminar</button>
-                  </td>
-                </tr>
-              ))}
+                    <td>
+                      <button onClick={() => addPoints100(m.id)}>
+                        +100
+                      </button>
+                      <input
+                        type='number'
+                        min='1'
+                        max='9999'
+                        value={customAmounts[m.id] || ''}
+                        onChange={e => updateCustom(m.id, e.target.value)}
+                      />
+                      <button onClick={() => addCustomPoints(m.id)}>
+                        Agregar
+                      </button>
+                      <input
+                        type='number'
+                        min='1'
+                        max={m.points}
+                        value={redeemAmounts[m.id] || ''}
+                        onChange={e => updateRedeem(m.id, e.target.value)}
+                      />
+                      <button onClick={() => redeemPoints(m.id)}>
+                        Redimir
+                      </button>
+                      <button onClick={() => handleEdit(m)}>Editar</button>
+                      <button onClick={() => handleDelete(m.id)}>Eliminar</button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
 
           <button onClick={exportPdf}>Exportar informe PDF</button>
+          <button onClick={exportXls}>Exportar informe XLS</button>
         </div>
       );
     }
