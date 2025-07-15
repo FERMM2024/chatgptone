@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gestor de recompensas</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+    button { margin-right: 0.5rem; }
+    input[type="number"] { width: 6rem; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React y ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <!-- Babel para interpretar JSX en el navegador -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- jsPDF para exportar el informe -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script type="text/babel">
+    const initialMembers = [
+      { id: 1, name: 'Ana', email: 'ana@example.com', points: 120 },
+      { id: 2, name: 'Luis', email: 'luis@example.com', points: 80 },
+      { id: 3, name: 'Carla', email: 'carla@example.com', points: 60 },
+    ];
+
+    function App() {
+      const [members, setMembers] = React.useState(initialMembers);
+      const [name, setName] = React.useState('');
+      const [email, setEmail] = React.useState('');
+      const [editId, setEditId] = React.useState(null);
+      const [customAmounts, setCustomAmounts] = React.useState({});
+
+      const resetForm = () => {
+        setName('');
+        setEmail('');
+        setEditId(null);
+      };
+
+      const handleAddOrUpdate = () => {
+        if (!name.trim() || !email.trim()) return;
+        if (editId) {
+          setMembers(members.map(m => m.id === editId ? { ...m, name, email } : m));
+        } else {
+          const newMember = { id: Date.now(), name, email, points: 0 };
+          setMembers([...members, newMember]);
+        }
+        resetForm();
+      };
+
+      const handleEdit = (member) => {
+        setEditId(member.id);
+        setName(member.name);
+        setEmail(member.email);
+      };
+
+      const handleDelete = (id) => {
+        setMembers(members.filter(m => m.id !== id));
+      };
+
+      const addPoints100 = (id) => {
+        setMembers(members.map(m => m.id === id ? { ...m, points: m.points + 100 } : m));
+      };
+
+      const addCustomPoints = (id) => {
+        const value = parseInt(customAmounts[id], 10);
+        if (value >= 1 && value <= 9999) {
+          setMembers(members.map(m => m.id === id ? { ...m, points: m.points + value } : m));
+        }
+        setCustomAmounts({ ...customAmounts, [id]: '' });
+      };
+
+      const updateCustom = (id, val) => {
+        setCustomAmounts({ ...customAmounts, [id]: val });
+      };
+
+      const exportPdf = () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text('Informe de puntos', 10, 10);
+        members.forEach((m, idx) => {
+          doc.text(`${m.name} (${m.email}) - ${m.points}`, 10, 20 + idx * 10);
+        });
+        doc.save('informe_puntos.pdf');
+      };
+
+      return (
+        <div>
+          <h1>Administrador de Recompensas</h1>
+
+          <div>
+            <input
+              placeholder='Nombre'
+              value={name}
+              onChange={e => setName(e.target.value)}
+            />
+            <input
+              placeholder='Correo'
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+            />
+            <button onClick={handleAddOrUpdate}>
+              {editId ? 'Actualizar' : 'Agregar'}
+            </button>
+            {editId && <button onClick={resetForm}>Cancelar</button>}
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Puntos</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map(m => (
+                <tr key={m.id}>
+                  <td>{m.name}</td>
+                  <td>{m.email}</td>
+                  <td>{m.points}</td>
+                  <td>
+                    <button onClick={() => addPoints100(m.id)}>
+                      +100
+                    </button>
+                    <input
+                      type='number'
+                      min='1'
+                      max='9999'
+                      value={customAmounts[m.id] || ''}
+                      onChange={e => updateCustom(m.id, e.target.value)}
+                    />
+                    <button onClick={() => addCustomPoints(m.id)}>
+                      Agregar
+                    </button>
+                    <button onClick={() => handleEdit(m)}>Editar</button>
+                    <button onClick={() => handleDelete(m.id)}>Eliminar</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <button onClick={exportPdf}>Exportar informe PDF</button>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
