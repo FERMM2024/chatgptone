@@ -6,8 +6,9 @@ Esta es una aplicación en React para administrar puntos de recompensa de un equ
 - Cargar puntos de 100 en 100 o ingresar manualmente una cantidad de 1 a 9999 puntos.
 - Redimir puntos restándolos del saldo disponible.
 - Exportar un informe con los puntos acumulados en PDF o XLS.
+- Presenta un estilo basado en Material Design gracias a la librería Materialize.
 
-Para probarla localmente, abre `index.html` en un navegador moderno con conexión a internet (se utilizan CDNs para React, Babel, jsPDF y XLSX).
+Para probarla localmente, abre `index.html` en un navegador moderno con conexión a internet (se utilizan CDNs para React, Babel, jsPDF, XLSX y Materialize).
 
 ## Enlace público
 

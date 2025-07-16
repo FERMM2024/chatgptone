@@ -3,11 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <title>Gestor de recompensas</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet"/>
   <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; }
-    table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
-    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
-    button { margin-right: 0.5rem; }
+    body { padding: 2rem; }
     input[type="number"] { width: 6rem; }
   </style>
 </head>
@@ -23,6 +21,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <!-- XLSX para generar archivos de Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <!-- Materialize JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
   <script type="text/babel">
     const initialMembers = [
@@ -113,28 +113,38 @@
         XLSX.writeFile(workbook, 'informe_puntos.xlsx');
       };
 
-      return (
-        <div>
-          <h1>Administrador de Recompensas</h1>
+        return (
+          <div className="container">
+            <h1 className="center-align">Administrador de Recompensas</h1>
 
-          <div>
-            <input
-              placeholder='Nombre'
-              value={name}
-              onChange={e => setName(e.target.value)}
-            />
-            <input
-              placeholder='Correo'
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-            />
-            <button onClick={handleAddOrUpdate}>
-              {editId ? 'Actualizar' : 'Agregar'}
-            </button>
-            {editId && <button onClick={resetForm}>Cancelar</button>}
-          </div>
+            <div className="row">
+              <div className="input-field col s4">
+                <input
+                  placeholder='Nombre'
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                />
+              </div>
+              <div className="input-field col s4">
+                <input
+                  placeholder='Correo'
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="col s4" style={{marginTop: '1rem'}}>
+                <button className="btn waves-effect waves-light" onClick={handleAddOrUpdate}>
+                  {editId ? 'Actualizar' : 'Agregar'}
+                </button>
+                {editId && (
+                  <button className="btn grey lighten-1" style={{marginLeft: '0.5rem'}} onClick={resetForm}>
+                    Cancelar
+                  </button>
+                )}
+              </div>
+            </div>
 
-          <table>
+          <table className="highlight">
             <thead>
               <tr>
                 <th>Nombre</th>
@@ -150,7 +160,7 @@
                   <td>{m.email}</td>
                   <td>{m.points}</td>
                     <td>
-                      <button onClick={() => addPoints100(m.id)}>
+                      <button className="btn-small" onClick={() => addPoints100(m.id)}>
                         +100
                       </button>
                       <input
@@ -160,7 +170,7 @@
                         value={customAmounts[m.id] || ''}
                         onChange={e => updateCustom(m.id, e.target.value)}
                       />
-                      <button onClick={() => addCustomPoints(m.id)}>
+                      <button className="btn-small" onClick={() => addCustomPoints(m.id)}>
                         Agregar
                       </button>
                       <input
@@ -170,19 +180,19 @@
                         value={redeemAmounts[m.id] || ''}
                         onChange={e => updateRedeem(m.id, e.target.value)}
                       />
-                      <button onClick={() => redeemPoints(m.id)}>
+                      <button className="btn-small" onClick={() => redeemPoints(m.id)}>
                         Redimir
                       </button>
-                      <button onClick={() => handleEdit(m)}>Editar</button>
-                      <button onClick={() => handleDelete(m.id)}>Eliminar</button>
+                      <button className="btn-small" onClick={() => handleEdit(m)}>Editar</button>
+                      <button className="btn-small red" onClick={() => handleDelete(m.id)}>Eliminar</button>
                     </td>
                   </tr>
                 ))}
             </tbody>
           </table>
 
-          <button onClick={exportPdf}>Exportar informe PDF</button>
-          <button onClick={exportXls}>Exportar informe XLS</button>
+          <button className="btn blue" onClick={exportPdf}>Exportar informe PDF</button>
+          <button className="btn green" style={{marginLeft: '0.5rem'}} onClick={exportXls}>Exportar informe XLS</button>
         </div>
       );
     }
