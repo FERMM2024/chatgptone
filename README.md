@@ -8,6 +8,8 @@ Esta es una aplicación en React para administrar puntos de recompensa de un equ
 - Exportar un informe con los puntos acumulados en PDF o XLS.
 - Presenta un estilo basado en Material Design gracias a la librería Materialize.
 
+Esta versión actualizada incluye etiquetas de formulario de Materialize y una llamada a M.AutoInit() para inicializar los componentes.
+
 Para probarla localmente, abre `index.html` en un navegador moderno con conexión a internet (se utilizan CDNs para React, Babel, jsPDF, XLSX y Materialize).
 
 ## Enlace público
